@@ -4,14 +4,14 @@
     "port": "5432",
     "username": "postgres",
     "password": "docker",
-    "database": "pi6",
+    "database": "queropet",
     "entities": [
         "./src/models/*ts"
     ],
     "migrations": [
         "./src/database/migrations/*ts"
     ],
-    "cli": { 
+    "cli": {
         "migrationsDir": "./src/database/migrations/"
     }
 }
