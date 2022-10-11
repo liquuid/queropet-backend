@@ -16,6 +16,35 @@ import AppError from '../errors/AppError';
 const usersRouter = Router();
 const upload = multer(uploadConfig);
 
+/*
+interface User{
+    id: string,
+    name: string,
+    phone_type: string,
+    phone: string,
+    info: string,
+    email: string,
+    birthday: string,
+    street: string,
+    complement: string,
+    number: string,
+    neightborhood: string,
+    city: string,
+    state: string,
+    zipcode: string,
+    social_id: string,
+    social_id_type: string,
+    favorite_pets: any,
+    candidate_pets: any
+}
+*/
+
+interface Request {
+    user: User,
+    body: any,
+    params: any
+}
+
 upload.array
 
 usersRouter.get('/', async (request, response) => {
@@ -29,7 +58,7 @@ usersRouter.get('/', async (request, response) => {
   return response.json(users);
 });
 
-usersRouter.post('/pendingrequests', ensureAuthenticated , async (request, response) => {
+usersRouter.post('/pendingrequests', ensureAuthenticated , async (request: any, response) => {
     const userRepository = getRepository(User);
     const petRepo = getRepository(Pet);
     const user_pets = await petRepo.find( { where: { user_id: request.user.id  },}, );
@@ -65,7 +94,7 @@ usersRouter.get('/:id', async (request, response) => {
     const userRepository = getRepository(User);
     const usersAllData = await userRepository.find({relations: ["favorite_pets", "candidate_pets"]});
 
-    const user = await (await userRepository.findOne(
+    const user: any = await (await userRepository.findOne(
         {
             where: { id: request.params.id }
         }
@@ -80,11 +109,11 @@ usersRouter.get('/candidate/:id', async (request, response) => {
 
     const users = usersAllData.map(({id, name, type, phone_type, phone, info, email, birthday, street, complement, number, neightborhood, city, state, zipcode, social_id, social_id_type, avatar, favorite_pets, candidate_pets}) => {
       return { id, name, type, phone_type, phone, info, email, birthday, street, complement, number, neightborhood, city, state, zipcode, social_id, social_id_type, avatar, favorite_pets, candidate_pets }
-    })
-    let candidates = [];
+    });
+    let candidates: User[] = [];
 
-    const candidate = users.map((user) => {
-        const username = user.candidate_pets.map((pet) => {
+    const candidate = users.map((user: any) => {
+        const username = user.candidate_pets.map((pet: any) => {
                 if( pet.id === request.params.id ) {
                     candidates.push(user)
 
@@ -123,7 +152,7 @@ usersRouter.post('/', async (request, response) => {
             social_id_type,
             password
         });
-        delete user.password;
+        user.password = "";
 
         return response.json(user);
 
@@ -173,14 +202,14 @@ usersRouter.put('/:id', async (request, response) => {
 
 });
 
-usersRouter.patch('/avatar', ensureAuthenticated, upload.single('avatar'), async ( request, response ) => {
+usersRouter.patch('/avatar', ensureAuthenticated, upload.single('avatar'), async ( request: any , response ) => {
 
         const updateUserAvatar = new UpdateAvatarUserService();
         const user = await updateUserAvatar.execute({
             user_id: request.user.id,
             avatarFilename: request.file.filename,
         });
-        delete user.password
+        user.password = "";
         return response.json(user);
 
 
@@ -189,14 +218,14 @@ usersRouter.patch('/avatar', ensureAuthenticated, upload.single('avatar'), async
 usersRouter.post('/fave/:id', async ( request, response ) => {
     const faveService = new FavePetService();
     const user = await faveService.execute(request.body.user.id, request.params.id);
-    delete user.password;
-    return response.json(user);
+    user.password = "";
+        return response.json(user);
 });
 
 usersRouter.post('/unfave/:id', async ( request, response ) => {
     const unFavePetService = new UnFavePetService();
     const user = await unFavePetService.execute(request.body.user.id, request.params.id);
-    delete user.password;
+    user.password = "";
     return response.json(user);
 });
 
@@ -204,7 +233,7 @@ usersRouter.post('/askadoption/:id', async ( request, response ) => {
 
     const askAdoptionService = new AskAdoptionPetService();
     const user = await askAdoptionService.execute(request.body.user.id, request.params.id);
-    delete user.password;
+    user.password = "";
     return response.json(user);
 });
 
@@ -212,7 +241,7 @@ usersRouter.post('/unaskadoption/:id', async ( request, response ) => {
 
     const unAskAdoptionService = new UnAskAdoptionPetService();
     const user = await unAskAdoptionService.execute(request.body.user.id, request.params.id);
-    delete user.password;
+    user.password = "";
     return response.json(user);
 });
 

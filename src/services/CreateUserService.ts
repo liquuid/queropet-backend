@@ -3,6 +3,27 @@ import { hash } from 'bcryptjs';
 import User from "../models/User";
 import AppError from '../errors/AppError';
 
+interface IntUser{
+    name : string;
+    type: string;
+    phone_type: string;
+    phone: string;
+    info: string;
+    email: string;
+    birthday: string;
+    street: string;
+    complement: string;
+    number: string;
+    neightborhood: string;
+    city: string;
+    state: string;
+    zipcode: string;
+    social_id: string;
+    social_id_type: string;
+    password: string;
+}
+
+
 interface Request{
     name : string;
     type: string;
@@ -25,7 +46,7 @@ interface Request{
 
 class CreateUserService {
     public async execute({name, type = 'adopter', phone_type, phone, info, email, birthday, street, complement, number, neightborhood, city, state, zipcode, social_id, social_id_type = 'cpf', password}: Request): Promise<User>{
-        const usersRepository = getRepository(User);
+        const usersRepository: any = getRepository(User);
         const checkUserExists = await usersRepository.findOne({
             where: {email},
         });
